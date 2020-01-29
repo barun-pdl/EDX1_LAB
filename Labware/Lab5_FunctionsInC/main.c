@@ -42,10 +42,14 @@ int main (void) {
 //    the width is less than 3,  
 //    the length is greater than 20 or  
 //    the width is greater than 20. 
-unsigned long Calc_Area(unsigned long l, unsigned long w) {
+unsigned long Calc_Area(unsigned long l, unsigned long w) 
+	{
   unsigned long result;
-
-// Put your Lab 5 code here
-  
+	if ((l <3) | (w <3) | (l > 20) | (w > 20)) 
+		{
+				result = 0;
+		}
+	else
+	result = w*l;
   return(result);
 }
