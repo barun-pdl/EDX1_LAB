@@ -28,4 +28,3 @@ int main(void){ unsigned long n;
     UART_OutDistance(n); // your function
   }
 }
-

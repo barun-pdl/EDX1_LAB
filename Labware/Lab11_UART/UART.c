@@ -123,10 +123,17 @@ char character;
 // Output: none
 void UART_OutString(unsigned char buffer[]){
 // as part of Lab 11 implement this function
-
+	unsigned cnt = 0;
+	while (buffer[cnt] != 0)
+	{
+		while((UART0_FR_R&UART_FR_TXFF) != 0);
+		UART0_DR_R = buffer[cnt];
+		cnt++;
+	}
 }
 
 unsigned char String[10];
+	unsigned int inv = 0; // Defined to handle size of Matrix
 //-----------------------UART_ConvertUDec-----------------------
 // Converts a 32-bit number in unsigned decimal format
 // Input: 32-bit number to be transferred
@@ -139,9 +146,48 @@ unsigned char String[10];
 // 2210 to "2210 "
 //10000 to "**** "  any value larger than 9999 converted to "**** "
 void UART_ConvertUDec(unsigned long n){
-// as part of Lab 11 implement this function
-  
-}
+	unsigned int i;
+	unsigned int cnt = 0;
+	unsigned char temp_String[10];
+	for (i = 0; i<10;i++)
+	{
+		String[i] = 0;
+	}
+	if(n<10000)
+		{
+			do // INVERTED
+				{
+					temp_String[cnt+1] = (n%10)+0x30 ; 
+					n = n/10;
+					cnt++;
+				} while(n);
+				//i = cnt;
+				while(cnt < 4)
+				{
+					temp_String[cnt+1] = 32; // Insert Space
+					cnt++;
+				}
+		}
+		else
+			{
+				do
+				{
+					temp_String[cnt+1] = 42;  // Insert"*"
+					cnt++;
+				}while(cnt < 4);
+		  }
+		temp_String[0] = 32; // SPACE
+			cnt++;
+			i = cnt;
+		
+		/*INVERT THE STRING*/	
+		for(;cnt;cnt--)
+			{
+				String[cnt-1] = temp_String[i-cnt];				
+			}
+				
+ }
+
 
 //-----------------------UART_OutUDec-----------------------
 // Output a 32-bit number in unsigned decimal format
@@ -166,7 +212,43 @@ void UART_OutUDec(unsigned long n){
 //10000 to "*.*** cm"  any value larger than 9999 converted to "*.*** cm"
 void UART_ConvertDistance(unsigned long n){
 // as part of Lab 11 implement this function
-  
+  //String is the global variable
+	unsigned char temp_String[10];
+	unsigned int cnt = 0;
+	unsigned int i;
+	unsigned int divider = 1000;
+	for (i = 0; i<10;i++)
+	{
+		String[i] = 0;
+	}
+	if(n<10000)
+		{
+	do // Inverted
+		{
+			temp_String[cnt] = (n/divider)+0x30 ; 
+			n = n%divider;
+			divider = divider/10;
+			cnt++;
+		} while(divider);
+	//	 temp_String[0] = 32; // SPACE
+	}
+		else{
+		do
+				{
+					temp_String[cnt] = 42;  // Insert"*"
+					cnt++;
+				}while(cnt < 4);
+		 
+		}
+	  temp_String[cnt] = 32; // SPACE
+		cnt++;
+		/*INSERT THE DECIMAL POINT*/
+		String[0] = temp_String[0];
+		String[1] = 46;			// For "."
+		String[2] = temp_String[1];
+		String[3] = temp_String[2];
+		String[4] = temp_String[3];
+		String[5] = temp_String[4];
 }
 
 //-----------------------UART_OutDistance-----------------------
@@ -177,4 +259,5 @@ void UART_ConvertDistance(unsigned long n){
 void UART_OutDistance(unsigned long n){
   UART_ConvertDistance(n);      // convert using your function
   UART_OutString(String);       // output using your function
+	UART_OutString("cm"); 
 }
